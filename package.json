@@ -4,7 +4,7 @@
   "description": "",
   "scripts": {
     "browser": "npx puppeteer browsers install chrome",
-    "bot": "node bot.js",
+    "start": "node bot.js",
     "parser": "node parser.js"
   },
   "keywords": [],
