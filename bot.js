@@ -62,4 +62,4 @@ bot.onText(/\/remove (\d+)/, (msg, match) => {
     });
 });
 
-startParser();
+// startParser();
