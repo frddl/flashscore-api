@@ -15,16 +15,15 @@ async function checkGames() {
 
         const checkPromises = games.map(async (game) => {
             const gameData = await fetchGameScore(game);
-            if (!game.name) {
-                db.setName(game.id, gameData.name);
-                bot.sendMessage(`Started alerting for game ID ${game.id}: ${gameData.name}`);
-            }
-
-            console.log(gameData);
 
             if (!gameData) {
                 console.log(`No data fetched for game ID ${game.id}. Skipping...`);
                 return;
+            }
+
+            if (gameData && !game.name) {
+                db.setName(game.id, gameData.name);
+                bot.sendMessage(`Started alerting for game ID ${game.id}: ${gameData.name}`);
             }
 
             const condition = checkAlertCondition(gameData);
