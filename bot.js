@@ -64,3 +64,5 @@ bot.onText(/\/remove (\d+)/, (msg, match) => {
 });
 
 module.exports = bot;
+
+startParser();
