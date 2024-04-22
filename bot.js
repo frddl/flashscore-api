@@ -4,6 +4,7 @@ const startParser = require('./parser');
 const db = require('./db');
 
 const bot = new TelegramBot(config.telegramToken, { polling: true });
+bot.sendMessage(config.telegramChatId, 'Bot started successfully.');
 
 bot.onText(/\/add (.+)/, (msg, match) => {
     const chatId = msg.chat.id;
