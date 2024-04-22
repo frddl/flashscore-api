@@ -47,4 +47,9 @@ async function checkGames() {
 }
 
 // checkGames();
-setInterval(checkGames, 10 * SECOND);
+function startParser(){
+    console.log('Starting parser...')
+    setInterval(checkGames, 10 * SECOND);
+}
+
+module.exports = startParser;

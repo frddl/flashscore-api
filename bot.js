@@ -1,5 +1,6 @@
 const TelegramBot = require('node-telegram-bot-api');
 const config = require('./config');
+const startParser = require('./parser');
 const db = require('./db');
 
 const bot = new TelegramBot(config.telegramToken, { polling: true });
@@ -16,7 +17,6 @@ bot.onText(/\/add (.+)/, (msg, match) => {
 
     const [link] = args;
 
-    const db = require('./db');
     db.run('INSERT INTO games (link) VALUES (?)', [link], function(err) {
         if (err) {
             console.error(err.message);
@@ -29,7 +29,6 @@ bot.onText(/\/add (.+)/, (msg, match) => {
 
 bot.onText(/\/list/, (msg) => {
     const chatId = msg.chat.id;
-    const db = require('./db');
     db.all('SELECT id, name FROM games WHERE is_active = 1 and alert_sent_at is null', [], (err, rows) => {
         if (err) {
             console.error(err.message);
@@ -49,7 +48,6 @@ bot.onText(/\/remove (\d+)/, (msg, match) => {
     const chatId = msg.chat.id;
     const id = match[1]; // Extracted ID from the command
 
-    const db = require('./db');
     db.run('DELETE FROM games WHERE id = ?', [id], function(err) {
         if (err) {
             console.error(err.message);
@@ -63,3 +61,5 @@ bot.onText(/\/remove (\d+)/, (msg, match) => {
         bot.sendMessage(chatId, "Game removed successfully.");
     });
 });
+
+startParser();
