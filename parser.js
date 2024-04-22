@@ -1,5 +1,4 @@
 const db = require('./db');
-const bot = require('./bot');
 const fetchGameScore = require('./gamePageParser');
 const checkAlertCondition = require('./gameConditions');
 const sendAlert = require('./alertService');
@@ -23,7 +22,6 @@ async function checkGames() {
 
             if (gameData && !game.name) {
                 db.setName(game.id, gameData.name);
-                bot.sendMessage(`Started alerting for game ID ${game.id}: ${gameData.name}`);
             }
 
             const condition = checkAlertCondition(gameData);
