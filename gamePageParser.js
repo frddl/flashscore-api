@@ -13,7 +13,7 @@ async function fetchGameScore(game) {
     await page.goto(game.link, { waitUntil: 'networkidle2' });
 
     try {
-        await page.waitForSelector('body', {timeout: 5000});
+        await page.waitForSelector('.smv__incidentsHeader.section__title');
         // console.log('Selector found', page.url());
 
         const halfStatus = await page.evaluate(() => 
