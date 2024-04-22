@@ -61,5 +61,3 @@ bot.onText(/\/remove (\d+)/, (msg, match) => {
         bot.sendMessage(chatId, "Game removed successfully.");
     });
 });
-
-startParser();

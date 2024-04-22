@@ -3,7 +3,6 @@
   "version": "1.0.0",
   "description": "",
   "scripts": {
-    "browser": "npx puppeteer browsers install chrome",
     "start": "node bot.js",
     "parser": "node parser.js"
   },
