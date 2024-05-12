@@ -1,6 +1,6 @@
 module.exports = {
   apps : [{
-    name   : "game-alerts-bot",
+    name   : "flashscore-api",
     script : "npm",
     args   : "run start",
     watch  : true, // optional: restarts the app if files change

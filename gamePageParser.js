@@ -1,35 +1,21 @@
 const puppeteer = require('puppeteer');
-const db = require('./db');
 
 async function fetchGameScore(game) {
+    console.log('Fetching game data... ' + game);
+    
     const browser = await puppeteer.launch({  
         headless: true,
         defaultViewport: null,
-        args: ['--no-sandbox'],
+        args: ['--no-sandbox', '--disable-features=site-per-process'],
         // executablePath: "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
     });
 
     const page = await browser.newPage();
-    await page.goto(game.link, { waitUntil: 'networkidle2' });
+    await page.goto(game, { waitUntil: 'networkidle2' });
 
     try {
         await page.waitForSelector('.smv__incidentsHeader.section__title');
         // console.log('Selector found', page.url());
-
-        const halfStatus = await page.evaluate(() => 
-            Array.from(document.querySelectorAll('.fixedHeaderDuel__detailStatus'), element => element.textContent)
-        );
-
-        if (halfStatus[0] !== '2-й тайм') {
-            console.log('Not second half, skipping...');
-
-            if (halfStatus[0] === 'ЗАВЕРШЕН') {
-                db.deactivate(game.id);
-            }
-
-            await browser.close();
-            return;
-        }
 
         const scores = await page.evaluate(() => 
             Array.from(document.querySelectorAll('.smv__incidentsHeader.section__title'), element => element.innerHTML)
@@ -45,6 +31,40 @@ async function fetchGameScore(game) {
             document.title
         );
 
+        const awayStats = await page.evaluate(() => {
+            const stats = [];
+
+            const elements = document.getElementsByClassName('smv__awayParticipant');
+            for (let i = 0; i < elements.length; i++) {
+                stats.push({
+                    'type': elements[i].querySelector('title').innerHTML,
+                    'time': elements[i].innerText.split('\n')[0],
+                    'player': elements[i].innerText.split('\n')[1],
+                    'team': 'away',
+                });
+            }
+
+            return stats;
+        });
+
+        const homeStats = await page.evaluate(() => {
+            const stats = [];
+
+            const elements = document.getElementsByClassName('smv__homeParticipant');
+            for (let i = 0; i < elements.length; i++) {
+                stats.push({
+                    'type': elements[i].querySelector('title').innerHTML,
+                    'time': elements[i].innerText.split('\n')[0],
+                    'player': elements[i].innerText.split('\n')[1],
+                    'team': 'home',
+                });
+            }
+
+            return stats;
+        });
+
+        const timeline = homeStats.concat(awayStats).sort((a, b) => Number(a.time) - Number(b.time));
+
         // name format is ШАР 1-0 ЭЙП | Шарлеруа - Эйпен | Обзор
 
         const name = title.split('|')[1].trim();
@@ -56,6 +76,13 @@ async function fetchGameScore(game) {
             firstHalf,
             secondHalf,
             name,
+            timeline,
+            'currentScore': '@todo',
+            'initialBets': {
+                'home': '@todo',
+                'draw': '@todo',
+                'away': '@todo',
+            },
         };
     } catch (error) {
         console.error('Error fetching game data:', error);
