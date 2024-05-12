@@ -1,6 +1,8 @@
 const express = require('express')
+const config = require('./config');
 const app = express()
-const port = 3000
+
+const port = config.port;
 const fetchGameScore = require('./gamePageParser');
 
 app.get('/get-match/:matchId', async (req, res) => {

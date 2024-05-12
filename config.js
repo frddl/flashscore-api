@@ -1,5 +1,6 @@
 require('dotenv').config();
 
 module.exports = {
-  // env: process.env.ENVIRONMENT,
+  port: process.env.PORT,
+  puppeteerExecutablePath: process.env.PUPPETEER_EXECUTABLE_PATH,
 };

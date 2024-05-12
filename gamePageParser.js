@@ -7,7 +7,7 @@ async function fetchGameScore(game) {
         headless: true,
         defaultViewport: null,
         args: ['--no-sandbox', '--disable-features=site-per-process'],
-        // executablePath: "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
+        executablePath: process.env.PUPPETEER_EXECUTABLE_PATH,
     });
 
     const page = await browser.newPage();
