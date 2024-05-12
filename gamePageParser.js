@@ -38,8 +38,8 @@ async function fetchGameScore(game) {
             for (let i = 0; i < elements.length; i++) {
                 stats.push({
                     'type': elements[i].querySelector('title').innerHTML,
-                    'time': elements[i].innerText.split('\n')[0],
-                    'player': elements[i].innerText.split('\n')[1],
+                    'time': parseInt(elements[i].innerText.split('\n')[0]),
+                    'info': elements[i].innerText.split('\n')[1],
                     'team': 'away',
                 });
             }
@@ -54,8 +54,8 @@ async function fetchGameScore(game) {
             for (let i = 0; i < elements.length; i++) {
                 stats.push({
                     'type': elements[i].querySelector('title').innerHTML,
-                    'time': elements[i].innerText.split('\n')[0],
-                    'player': elements[i].innerText.split('\n')[1],
+                    'time': parseInt(elements[i].innerText.split('\n')[0]),
+                    'info': elements[i].innerText.split('\n')[1],
                     'team': 'home',
                 });
             }
@@ -63,7 +63,11 @@ async function fetchGameScore(game) {
             return stats;
         });
 
-        const timeline = homeStats.concat(awayStats).sort((a, b) => Number(a.time) - Number(b.time));
+        const timeline = homeStats.concat(awayStats).sort((a, b) => a.time - b.time);
+
+        const totalScore = await page.evaluate(() => {
+            return document.querySelector('.detailScore__wrapper').innerText.replaceAll('\n', ' ');
+        });
 
         // name format is ШАР 1-0 ЭЙП | Шарлеруа - Эйпен | Обзор
 
@@ -77,7 +81,7 @@ async function fetchGameScore(game) {
             secondHalf,
             name,
             timeline,
-            'currentScore': '@todo',
+            totalScore,
             'initialBets': {
                 'home': '@todo',
                 'draw': '@todo',
