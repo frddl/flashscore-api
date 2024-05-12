@@ -5,10 +5,16 @@ const app = express()
 const port = config.port;
 const fetchGameScore = require('./gamePageParser');
 
+app.get('/', (req, res) => {
+    res.send({'status': 'OK'});
+    return;
+});
+
 app.get('/get-match/:matchId', async (req, res) => {
     const matchId = req.params.matchId;
     var data = await fetchGameScore('https://www.flashscore.com/match/' + matchId + '/#/match-summary');
     res.send(data);
+    return;
 });
 
 app.listen(port, () => {
