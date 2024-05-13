@@ -79,17 +79,30 @@ async function fetchGameScore(game) {
 
         const name = title.split('|')[1].trim();
 
+        const details = await page.evaluate(() => {
+            const startedAt = document.querySelector('.duelParticipant__startTime').innerText;
+            const status = document.querySelector('.fixedHeaderDuel__detailStatus').innerText;
+            const timestamp = document.querySelector('.eventAndAddedTime').innerText;
+
+            return {
+                startedAt,
+                status,
+                timestamp,
+            };
+        });
+
         // console.log('Halftime score:', firstHalf);
         // console.log('Score:', secondHalf);
 
         const endTime = Date.now();
 
         return {
+            name,
+            details,
+            totalScore,
             firstHalf,
             secondHalf,
-            name,
             timeline,
-            totalScore,
             'initialBets': {
                 'home': '@todo',
                 'draw': '@todo',
