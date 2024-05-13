@@ -25,7 +25,11 @@ async function fetchGameScore(game) {
         // console.log(scores[1]); // Debugging log
 
         const firstHalf = scores[0].split('</div><div>')[1].replace('</div>', '').trim();
-        const secondHalf = scores[1].split('</div><div>')[1].replace('</div>', '').trim();
+        var secondHalf = null;
+
+        if (scores.length > 1){
+            secondHalf = scores[1].split('</div><div>')[1].replace('</div>', '').trim();
+        }
 
         const title = await page.evaluate(() => 
             document.title
