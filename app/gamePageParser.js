@@ -3,6 +3,8 @@ const puppeteer = require('puppeteer');
 async function fetchGameScore(game) {
     console.log('Fetching game data... ' + game);
     
+    const startTime = Date.now();
+
     const browser = await puppeteer.launch({  
         headless: true,
         defaultViewport: null,
@@ -80,6 +82,8 @@ async function fetchGameScore(game) {
         // console.log('Halftime score:', firstHalf);
         // console.log('Score:', secondHalf);
 
+        const endTime = Date.now();
+
         return {
             firstHalf,
             secondHalf,
@@ -91,6 +95,7 @@ async function fetchGameScore(game) {
                 'draw': '@todo',
                 'away': '@todo',
             },
+            'responseTime': (endTime - startTime) / 1000,
         };
     } catch (error) {
         console.error('Error fetching game data:', error);
