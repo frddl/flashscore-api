@@ -45,7 +45,7 @@ async function fetchGameScore(game) {
                 stats.push({
                     'type': elements[i].querySelector('title').innerHTML,
                     'time': parseInt(elements[i].innerText.split('\n')[0]),
-                    'info': elements[i].innerText.split('\n')[1],
+                    'info': elements[i].innerText.split('\n')[1] ?? 'No info',
                     'team': 'away',
                 });
             }
