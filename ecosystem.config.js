@@ -1,13 +1,9 @@
 module.exports = {
-    apps: [
-      {
-        name: 'flashscore-api',
-        script: 'npm',
-        args: 'run start',
-        cwd: './app',
-        watch: true,
-        autorestart: true,
-      },
-    ],
-  };
-  
+  apps : [{
+    name   : "flashscore-api",
+    script : "npm",
+    args   : "run start",
+    watch  : true, // optional: restarts the app if files change
+  }]
+};
+
