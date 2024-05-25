@@ -39,9 +39,13 @@ async function fetchGameScore(game) {
     await page.goto(game, { waitUntil: 'networkidle2' });
 
     try {
-        await page.waitForSelector('.smv__incidentsHeader.section__title');
+        await page.waitForSelector('.smv__incidentsHeader.section__title', { timeout: 5000 });
 
         const gameData = await page.evaluate(() => {
+            const classification = document.querySelector('.tournamentHeader__country').innerText.split(': ');
+            const country = classification[0];
+            const league = classification[1].split(' - ')[0];
+
             const scores = Array.from(document.querySelectorAll('.smv__incidentsHeader.section__title'), element => element.innerHTML);
             const firstHalf = scores[0].split('</div><div>')[1].replace('</div>', '').trim();
             const secondHalf = scores.length > 1 ? scores[1].split('</div><div>')[1].replace('</div>', '').trim() : null;
@@ -69,18 +73,22 @@ async function fetchGameScore(game) {
             };
 
             return {
+                country,
+                league,
+                title,
+                details,
+                totalScore,
                 firstHalf,
                 secondHalf,
-                title,
-                totalScore,
                 timeline,
-                details,
             };
         });
 
         const endTime = Date.now();
 
         return {
+            country: gameData.country,
+            league: gameData.league,
             name: gameData.title.split('|')[1].trim(),
             details: gameData.details,
             totalScore: gameData.totalScore,
