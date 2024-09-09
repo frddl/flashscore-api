@@ -25,7 +25,7 @@ async function fetchGameScore(game) {
 
     const page = await browser.newPage();
     
-    // Intercept requests to block unnecessary resources
+    await page.setCacheEnabled(false);
     await page.setRequestInterception(true);
     page.on('request', request => {
         const resourceType = request.resourceType();
