@@ -1,31 +1,42 @@
 const puppeteer = require('puppeteer');
 
-async function fetchGameScore(game) {
-    console.log('Fetching game data... ' + game);
+let browser;
+
+// Initialize the browser once
+async function initializeBrowser() {
+    if (!browser) {
+        browser = await puppeteer.launch({
+            headless: true,
+            args: [
+                '--no-sandbox',
+                '--disable-setuid-sandbox',
+                '--disable-dev-shm-usage',
+                '--disable-accelerated-2d-canvas',
+                '--disable-gpu',
+                '--window-size=1280x800',
+                '--disable-features=site-per-process'
+            ],
+            defaultViewport: {
+                width: 1280,
+                height: 800
+            },
+            executablePath: process.env.PUPPETEER_EXECUTABLE_PATH,
+        });
+    }
+}
+
+// Fetch game data from the provided URL
+async function fetchGameScore(gameUrl) {
+    console.log('Fetching game data... ' + gameUrl);
     
     const startTime = Date.now();
+    await initializeBrowser();  // Ensure the browser is initialized once
 
-    const browser = await puppeteer.launch({  
-        headless: true,
-        args: [
-            '--no-sandbox',
-            '--disable-setuid-sandbox',
-            '--disable-dev-shm-usage',
-            '--disable-accelerated-2d-canvas',
-            '--disable-gpu',
-            '--window-size=1280x800',
-            '--disable-features=site-per-process'
-        ],
-        defaultViewport: {
-            width: 1280,
-            height: 800
-        },
-        executablePath: process.env.PUPPETEER_EXECUTABLE_PATH,
-    });
+    const page = await browser.newPage();  // Create a new page (tab) for each request
 
-    const page = await browser.newPage();
+    await page.setCacheEnabled(false);  // Disable cache to avoid using unnecessary disk space
     
-    await page.setCacheEnabled(false);
+    // Block unnecessary resources to save bandwidth and memory
     await page.setRequestInterception(true);
     page.on('request', request => {
         const resourceType = request.resourceType();
@@ -36,9 +47,10 @@ async function fetchGameScore(game) {
         }
     });
 
-    await page.goto(game, { waitUntil: 'networkidle2' });
-
     try {
+        await page.goto(gameUrl, { waitUntil: 'networkidle2' });
+
+        // Wait for the game data to load
         await page.waitForSelector('.smv__incidentsHeader.section__title', { timeout: 5000 });
 
         const gameData = await page.evaluate(() => {
@@ -104,11 +116,18 @@ async function fetchGameScore(game) {
         };
     } catch (error) {
         console.error('Error fetching game data:', error);
+        throw error;  // Rethrow the error to be captured by the Express route handler
     } finally {
-        await browser.close();
+        await page.close();  // Close the page after processing
     }
-
-    return null;  // Ensure a value is always returned
 }
 
-module.exports = fetchGameScore;
+// Close the browser when all tasks are complete
+async function closeBrowser() {
+    if (browser) {
+        await browser.close();
+        browser = null;  // Reset the browser instance
+    }
+}
+
+module.exports = { fetchGameScore, closeBrowser, initializeBrowser };
