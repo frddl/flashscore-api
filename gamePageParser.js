@@ -21,7 +21,6 @@ async function fetchGameScore(game) {
             height: 800
         },
         executablePath: process.env.PUPPETEER_EXECUTABLE_PATH,
-        pipe: true,
     });
 
     const page = await browser.newPage();
