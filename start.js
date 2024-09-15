@@ -11,11 +11,18 @@ app.get('/', (req, res) => {
     return;
 });
 
-app.get('/get-match/:matchId', async (req, res) => {
-    const matchId = req.params.matchId;
-    var data = await fetchGameScore('https://www.flashscore.com/match/' + matchId + '/#/match-summary');
-    res.send(data);
-    return;
+app.get('/get-match/:matchId', async (req, res, next) => {
+    try {
+        const matchId = req.params.matchId;
+        const data = await fetchGameScore('https://www.flashscore.com/match/' + matchId + '/#/match-summary');
+        if (data) {
+            res.send(data);
+        } else {
+            res.status(404).send({ error: 'Data not found for match.' });
+        }
+    } catch (error) {
+        next(error); // Forward the error to Sentry's error handler
+    }
 });
 
 // The error handler must be registered before any other error middleware and after all controllers
